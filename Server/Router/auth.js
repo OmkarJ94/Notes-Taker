@@ -3,8 +3,10 @@ const bcrypt = require('bcryptjs');
 const authenticate = require('../middleware/authenticate')
 const router = express.Router();
 const note = require('../Schema/notes')
+const otp = require('../Schema/Otp')
+const nodemailer = require('nodemailer');
 const user = require('../Schema/userSchema');
-const { route } = require('express/lib/router');
+
 router.post("/register", async (req, res) => {
 
     try {
@@ -49,9 +51,12 @@ router.post('/login', async (req, res) => {
         if (!email || !password) {
             return res.status(400).json({ error: "please filled the data" })
         }
+
+
         const result = await user.findOne({ email: email })
 
 
+        (user)
         if (result != null) {
             const isMatch = await bcrypt.compare(password, result.password)
             token = await result.generateAuthToken();
@@ -149,4 +154,107 @@ router.get("/logout", async (req, res) => {
 
     }
 })
+router.post("/reset", async (req, res) => {
+    try {
+        const { email } = req.body;
+        (email)
+        if (!email) {
+            ("1")
+            return res.status(404).json({ error: "User Not Found" })
+        }
+        const result = await user.findOne({ email: email })
+        (result)
+        if (result) {
+            ("2")
+            const code = Math.floor(Math.random() * 10000 + 1)
+            let Code = new otp({
+                email,
+                Otp: code,
+                expireIn: new Date().getTime() + 300 * 1000
+            })
+            const response = await Code.save()
+            mailer(email, code)
+            res.status(200).json({ error: "OTP Send Your Mail Id" })
+        }
+        else {
+            ("3")
+            res.status(404).json({ error: "User Not Found" })
+        }
+    } catch (error) {
+        ("catch")
+
+        res.status(404).json({ error: error.message })
+    }
+
+})
+
+
+router.post("/changepassword", async (req, res) => {
+    try {
+        let { Otp, email, password } = req.body;
+
+        if (!Otp || !email || !password) {
+            res.status(404).json({ error: "Enter All Fields" })
+        }
+        let data = await otp.findOne({ email, Otp })
+
+        if (data) {
+
+            let currTime = new Date().getTime()
+            let diff = data.expireIn - currTime
+
+            if (diff < 0) {
+                res.status(401).json({ error: "Your OTP Expired" })
+            }
+            else {
+                const User = await user.findOne({ email })
+                User.password = password;
+                await User.save();
+                res.status(200).json({ message: "Your Password has been updated successfully" })
+            }
+        }
+        else {
+            res.status(404).json({ error: "Enter a Valid OTP" })
+        }
+
+
+    } catch (error) {
+        res.status(404).status("Something Went Wrong")
+    }
+
+
+})
+const mailer = (mail, otp) => {
+    try {
+
+        let mailTransporter = nodemailer.createTransport({
+            service: 'gmail',
+
+            auth: {
+                user: process.env.EMAIL,
+                pass: process.env.PASSWORD
+            }
+        });
+
+        let mailDetails = {
+            from: process.env.EMAIL,
+            to: mail,
+            subject: 'Email For Forgot Password',
+            text: `Your OTP for changing password is ${otp}`
+        };
+
+        mailTransporter.sendMail(mailDetails, function (err, data) {
+
+            if (err) {
+
+
+            } else {
+
+            }
+        })
+    } catch (error) {
+        (error)
+
+    }
+}
 module.exports = router;

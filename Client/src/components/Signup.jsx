@@ -1,5 +1,5 @@
 import React from "react";
-import { useState,useEffect } from "react";
+import { useState, useEffect } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import swal from "sweetalert";
 import "./signup.css";
@@ -39,7 +39,6 @@ const Signup = () => {
             cpassword: userData.cpassword,
           }),
         });
-  
 
         if (result.status !== 201) {
           setLoading(false);
@@ -144,6 +143,12 @@ const Signup = () => {
                           type="button"
                           class="btn btn-success btn-block btn-lg gradient-custom-4 text-body"
                           onClick={handleSubmit}
+                          disabled={
+                            userData.name.length < 2 ||
+                            userData.email.length < 3 ||
+                            userData.password < 3 ||
+                            userData.password.length < 3
+                          }
                         >
                           Register
                         </button>

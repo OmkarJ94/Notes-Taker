@@ -158,7 +158,12 @@ const Notitem = () => {
           </div>
           {loading && <Spinner />}
 
-          <button type="submit" class="btn btn-primary" onClick={handleSubmit}>
+          <button
+            type="submit"
+            class="btn btn-primary"
+            onClick={handleSubmit}
+            disabled={data.title.length < 2 || data.description.length < 3}
+          >
             Add Note
           </button>
         </form>

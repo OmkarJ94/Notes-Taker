@@ -108,11 +108,17 @@ const Login = () => {
                           type="button"
                           class="btn btn-success btn-block btn-lg gradient-custom-4 text-body"
                           onClick={handleSubmit}
+                          disabled={
+                            userData.email.length < 3 ||
+                            userData.password.length < 3
+                          }
                         >
                           LOGIN
                         </button>
                       </div>
-
+                      <NavLink to="/changepassword" className="link-danger">
+                        <b>Forgot password?</b>
+                      </NavLink>
                       <p class="text-center text-muted mt-3 mb-0">
                         Don't have an account?
                         <NavLink class="fw-bold text-body" to="/signup">

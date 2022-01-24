@@ -2,7 +2,7 @@
   "name": "server",
   "version": "1.0.0",
   "description": "",
-  "main": "app.js",  
+  "main": "app.js",
   "scripts": {
     "start": "node app.js",
     "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix Client && npm run build --prefix Client"
@@ -17,6 +17,7 @@
     "express": "^4.17.2",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.1.4",
+    "nodemailer": "^6.7.2",
     "nodemon": "^2.0.15",
     "validator": "^13.7.0"
   }
