@@ -56,7 +56,7 @@ router.post('/login', async (req, res) => {
         const result = await user.findOne({ email: email })
 
 
-        (user)
+
         if (result != null) {
             const isMatch = await bcrypt.compare(password, result.password)
             token = await result.generateAuthToken();
@@ -90,12 +90,12 @@ router.post('/login', async (req, res) => {
 router.post("/addnote", authenticate, async (req, res) => {
     try {
 
-        const { title, description } = req.body
+        const { title, description, time } = req.body
         if (!title || !description) {
             return res.status(400).json({ message: "Enter All filed" })
         }
         else {
-            const postmesage = await new note({ user: req.rootUser._id, title: title, description: description })
+            const postmesage = await new note({ user: req.rootUser._id, title: title, description: description, time })
             postmesage.save()
             res.status(200).json({ message: "message added successfully" })
         }
@@ -119,11 +119,11 @@ router.get("/getnote", authenticate, async (req, res) => {
 
 router.put("/update/:id", authenticate, async (req, res) => {
     try {
-        const { title, description } = req.body
+        const { title, description, time } = req.body
 
         const _id = req.params.id
 
-        const result = await note.findByIdAndUpdate(_id, { title: title, description: description }, { new: true })
+        const result = await note.findByIdAndUpdate(_id, { title: title, description: description, time }, { new: true })
 
     } catch (error) {
         res.status(400).json({ error: "something went wrong" })
@@ -157,15 +157,15 @@ router.get("/logout", async (req, res) => {
 router.post("/reset", async (req, res) => {
     try {
         const { email } = req.body;
-        (email)
+
         if (!email) {
-            ("1")
+
             return res.status(404).json({ error: "User Not Found" })
         }
         const result = await user.findOne({ email: email })
-        (result)
+
         if (result) {
-            ("2")
+
             const code = Math.floor(Math.random() * 10000 + 1)
             let Code = new otp({
                 email,
@@ -177,7 +177,7 @@ router.post("/reset", async (req, res) => {
             res.status(200).json({ error: "OTP Send Your Mail Id" })
         }
         else {
-            ("3")
+
             res.status(404).json({ error: "User Not Found" })
         }
     } catch (error) {
@@ -229,6 +229,8 @@ const mailer = (mail, otp) => {
 
         let mailTransporter = nodemailer.createTransport({
             service: 'gmail',
+            port: 587,
+            secure: false,
 
             auth: {
                 user: process.env.EMAIL,
@@ -240,7 +242,8 @@ const mailer = (mail, otp) => {
             from: process.env.EMAIL,
             to: mail,
             subject: 'Email For Forgot Password',
-            text: `Your OTP for changing password is ${otp}`
+            html: `
+            Your OTP for changing password is ${otp}`
         };
 
         mailTransporter.sendMail(mailDetails, function (err, data) {

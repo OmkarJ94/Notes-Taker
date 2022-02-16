@@ -41,6 +41,7 @@ const Notitem = () => {
         body: JSON.stringify({
           title: currentNote.title,
           description: currentNote.description,
+          time: new Date().toLocaleString(),
         }),
       });
     } catch (error) {
@@ -84,7 +85,7 @@ const Notitem = () => {
         setNotes(fetchedData);
       }
     } catch (err) {
-      swal(err.message);
+      swal("Something Went wrong");
     }
   };
 
@@ -106,6 +107,7 @@ const Notitem = () => {
         body: JSON.stringify({
           title: data.title,
           description: data.description,
+          time: new Date().toLocaleString(),
         }),
       });
 
@@ -158,12 +160,7 @@ const Notitem = () => {
           </div>
           {loading && <Spinner />}
 
-          <button
-            type="submit"
-            class="btn btn-primary"
-            onClick={handleSubmit}
-            disabled={data.title.length < 2 || data.description.length < 3}
-          >
+          <button type="submit" class="btn btn-primary" onClick={handleSubmit}>
             Add Note
           </button>
         </form>
@@ -174,7 +171,7 @@ const Notitem = () => {
             {length ? (
               notes.map((element) => {
                 return (
-                  <div className="col-md-4 my-3" key={element._id}>
+                  <div className="col-md-4 my-1" key={element._id}>
                     <div
                       class="card"
                       style={{
@@ -183,7 +180,11 @@ const Notitem = () => {
                       }}
                     >
                       <div class="card-body">
-                        <h5 class="card-title">Title:-{element.title}</h5>
+                        <h6 style={{ fontSize: "11px" }}>
+                          Note Created/Updated : {element.time}
+                        </h6>
+
+                        <h5 class="card-title">Title:{element.title}</h5>
 
                         <p class="card-text">
                           Description: {element.description}
