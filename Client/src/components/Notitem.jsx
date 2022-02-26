@@ -115,14 +115,14 @@ const Notitem = () => {
         setLoading(false);
         swal("Check all field");
       } else {
-        swal("Your Not Added Successfully");
+        swal("Your Note Added Successfully");
         setData({ title: "", description: "" });
       }
 
       setLoading(false);
     } catch (error) {
       setLoading(false);
-      swal("Something wen wrong");
+      swal("Something went wrong");
     }
   };
   return (
